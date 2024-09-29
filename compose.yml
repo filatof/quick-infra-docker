@@ -5,8 +5,7 @@ services:
     env_file:
       .env
     environment:
-      LDAP_ORGANISATION: "Horns and hooves"
-      LDAP_DOMAIN: infrastruct.ru
+      LDAP_DOMAIN: ldap.infrastruct.ru
     volumes:
       - ./ldap/data/slapd/database:/var/lib/ldap
       - ./ldap/data/slapd/config:/etc/ldap/slapd.d
@@ -16,6 +15,7 @@ services:
       - 6443:443
     environment:
       PHPLDAPADMIN_LDAP_HOST: ldap
+      PHPLDAPADMIN_HTTPS: false
 
 
     
