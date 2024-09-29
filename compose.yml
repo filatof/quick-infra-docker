@@ -2,10 +2,11 @@ version: "3.1"
 services:
   ldap:
     image: osixia/openldap
+    env_file:
+      .env
     environment:
       LDAP_ORGANISATION: "Horns and hooves"
       LDAP_DOMAIN: ldap.infrastruct.ru
-      LDAP_ADMIN_PASSWORD: qwerty
     volumes:
       - ./ldap/data/slapd/database:/var/lib/ldap
       - ./ldap/data/slapd/config:/etc/ldap/slapd.d
