@@ -57,6 +57,17 @@ services:
       PHPLDAPADMIN_LDAP_HOSTS: ldap.infrastruct.ru
       PHPLDAPADMIN_TRUST_PROXY_SSL: true
       PHPLDAPADMIN_HTTPS: false
+  
+  gitlab:
+    image: gitlab/gitlab-ce
+    volumes:
+      - ./gitlab/config:/etc/gitlab
+      - ./gitlab/logs:/var/log/gitlab
+      - ./gitlab/data:/var/opt/gitlab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxynet"
+      - "traefik.http.routers.gitlab.rule=Host(`gitlab.infrastruct.ru`)"
 
 networks:
   default:
