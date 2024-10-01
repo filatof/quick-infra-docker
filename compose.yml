@@ -1,22 +1,66 @@
-version: "3.1"
+version: "3"
 services:
+  reverse-proxy:
+    image: traefik:v3.1
+    container_name: traefik
+    command:
+      - "--api.insecure=false"
+      - "--api.dashboard=true"
+      - "--providers.docker"
+      - "--log.level=DEBUG"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=proxynet"
+      #entrypoints
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+      - "--entrypoints.http.http.redirections.entrypoint.to=https"
+      - "--entrypoints.http.http.redirections.entrypoint.scheme=https"
+      #letsencrypt
+      - "--entrypoints.https.http.tls.certResolver=le"
+      - "--certificatesresolvers.le.acme.tlschallenge=true"
+      - "--certificatesresolvers.le.acme.email=filatof@gmail.com"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.infrastruct.ru`)"
+      - "traefik.http.routers.dashboard.entrypoints=https"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$9iOvY5h9$$hSckozXgXyRW3QPXfbPwa0"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./letsencrypt:/letsencrypt
+
   ldap:
     image: osixia/openldap
+    container_name: openldap
+    hostname: ldap.infrastruct.ru
     env_file:
       .env
     environment:
-      LDAP_DOMAIN: ldap.infrastruct.ru
+      LDAP_DOMAIN: infrastruct.ru
     volumes:
       - ./ldap/data/slapd/database:/var/lib/ldap
       - ./ldap/data/slapd/config:/etc/ldap/slapd.d
+
   ldap_admin:
     image: osixia/phpldapadmin
-    ports:
-      - 6443:443
+    container_name: phpldapadmin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxynet"
+      - "traefik.http.routers.ldap.rule=Host(`ldap.infrastruct.ru`)"
     environment:
-      PHPLDAPADMIN_LDAP_HOST: ldap
+      PHPLDAPADMIN_LDAP_HOSTS: ldap.infrastruct.ru
+      PHPLDAPADMIN_TRUST_PROXY_SSL: true
       PHPLDAPADMIN_HTTPS: false
 
-
+networks:
+  default:
+    name: proxynet
+    external: true
     
   
