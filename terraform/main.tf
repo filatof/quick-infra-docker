@@ -129,6 +129,16 @@ resource "yandex_dns_recordset" "node1" {
   
   data = [yandex_compute_instance.node[0].network_interface[0].nat_ip_address]
 }
+
+resource "yandex_dns_recordset" "node" {
+  zone_id = yandex_dns_zone.example_zone.id
+  name    = "*.infrastruct.ru."
+  type    = "A"
+  ttl     = 300
+  
+  data = [yandex_compute_instance.node[0].network_interface[0].nat_ip_address]
+}
+
 resource "yandex_dns_recordset" "node2" {
   zone_id = yandex_dns_zone.example_zone.id
   name    = "node2.infrastruct.ru."
