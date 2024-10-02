@@ -65,6 +65,8 @@ services:
     restart: unless-stopped
     healthcheck:
       disable: true
+    env_file:
+      .env
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'https://gitlab.infrastruct.ru'
@@ -86,9 +88,9 @@ services:
           'port' => 636,
           'uid' => 'uid',
           'bind_dn' => 'CN=admin,DC=infrastruct,DC=ru',
-          'password' => 'abkfnjd',
+          'password' => '$LDAP_ADMIN_PASSWORD',
           'encryption' => 'simple_tls',
-          'verify_certificates' => true,
+          'verify_certificates' => false,
           'timeout' => 10,
           'active_directory' => false,
            #'user_filter' => '(employeeType=developer)',
