@@ -40,10 +40,10 @@ resource "yandex_vpc_subnet" "subnet" {
 }
 
 resource "yandex_compute_disk" "boot-disk" {
-  count    = 2
+  count    = var.count_num
   name     = "disk-vm${count.index + 1}"
   type     = "network-hdd"
-  size     = 10
+  size     = 20
   image_id = "fd8hglaneh113l00tv83" # ubuntu 22.04 + osLogin 
   labels = {
     environment = "vm-env-labels"
@@ -81,7 +81,7 @@ resource "yandex_vpc_security_group" "group1" {
 
 #-----------Claster-NODE-----------------
 resource "yandex_compute_instance" "node" {
-  count =2
+  count =var.count_num
   name        = "node-${count.index + 1}"
   platform_id = "standard-v3"
   zone        = "ru-central1-a"
@@ -89,7 +89,7 @@ resource "yandex_compute_instance" "node" {
 
   resources {
     cores         = 2
-    memory        = 2
+    memory        = 8
     core_fraction = 20
   }
 
@@ -139,14 +139,6 @@ resource "yandex_dns_recordset" "node" {
   data = [yandex_compute_instance.node[0].network_interface[0].nat_ip_address]
 }
 
-resource "yandex_dns_recordset" "node2" {
-  zone_id = yandex_dns_zone.example_zone.id
-  name    = "node2.infrastruct.ru."
-  type    = "A"
-  ttl     = 300
-  
-  data = [yandex_compute_instance.node[1].network_interface[0].nat_ip_address]
-}
 
 output "node_ip" {
   value = [for instance in yandex_compute_instance.node : instance.network_interface[0].nat_ip_address]

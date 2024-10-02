@@ -59,15 +59,41 @@ services:
       PHPLDAPADMIN_HTTPS: false
   
   gitlab:
-    image: gitlab/gitlab-ce
-    volumes:
-      - ./gitlab/config:/etc/gitlab
-      - ./gitlab/logs:/var/log/gitlab
-      - ./gitlab/data:/var/opt/gitlab
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=proxynet"
-      - "traefik.http.routers.gitlab.rule=Host(`gitlab.infrastruct.ru`)"
+        image: gitlab/gitlab-ce:latest
+        container_name: "gitlab"
+        hostname: gitlab.infrastruct.ru
+        restart: unless-stopped
+        healthcheck:
+          disable: true
+        environment:
+          GITLAB_OMNIBUS_CONFIG: |
+            external_url 'https://gitlab.infrastruct.ru' 
+            nginx['listen_port'] = 80
+            nginx['listen_https'] = false
+            nginx['proxy_set_headers'] = {
+              "X-Forwarded-Proto" => "https",
+              "X-Forwarded-Ssl" => "on"
+            }
+            gitlab_rails['gitlab_shell_ssh_port'] = 22
+            gitlab_rails['smtp_enable'] = false
+
+        ports:
+          - "22:22"
+        volumes:
+          - ./gitlab/config:/etc/gitlab
+          - ./gitlab/logs:/var/log/gitlab
+          - ./gitlab/data:/var/opt/gitlab
+        labels:
+          - traefik.enable=true
+          - "traefik.docker.network=proxynet"
+          - traefik.http.middlewares.gitlab_https.redirectscheme.scheme=https
+          - traefik.http.routers.gitlab.entrypoints=web
+          - traefik.http.routers.gitlab.middlewares=gitlab_https@docker
+          - traefik.http.routers.gitlab.rule=Host(`gitlab.infrastruct.ru`)
+          - traefik.http.routers.gitlab_https.entrypoints=websecure
+          - traefik.http.routers.gitlab_https.rule=Host(`gitlab.infrastruct.ru`)
+          - traefik.http.routers.gitlab_https.tls=true
+          - traefik.http.services.gitlab.loadbalancer.server.port=80
 
 networks:
   default:
