@@ -88,9 +88,9 @@ resource "yandex_compute_instance" "node" {
   hostname = "node-${count.index + 1}"
 
   resources {
-    cores         = 2
+    cores         = 4
     memory        = 6
-    core_fraction = 20
+    core_fraction = 50
   }
 
   boot_disk {
@@ -112,18 +112,18 @@ resource "yandex_compute_instance" "node" {
 
 
 resource "yandex_dns_zone" "example_zone" {
-  name        = "infrastruct"
+  name        = "nanocorpinfra"
   description = "my zone dns"
   labels = {
     label1 = "lable_zone_dns"
   }
-  zone    = "infrastruct.ru."
+  zone    = "nanocorpinfra.ru."
   public  = true
 }
 
 resource "yandex_dns_recordset" "node1" {
   zone_id = yandex_dns_zone.example_zone.id
-  name    = "node1.infrastruct.ru."
+  name    = "node1.nanocorpinfra.ru."
   type    = "A"
   ttl     = 300
   
@@ -132,7 +132,7 @@ resource "yandex_dns_recordset" "node1" {
 
 resource "yandex_dns_recordset" "node" {
   zone_id = yandex_dns_zone.example_zone.id
-  name    = "*.infrastruct.ru."
+  name    = "*.nanocorpinfra.ru."
   type    = "A"
   ttl     = 300
   
