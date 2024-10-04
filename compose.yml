@@ -53,6 +53,9 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=proxynet"
       - "traefik.http.routers.ldap.rule=Host(`ldap.infrastruct.ru`)"
+      - "traefik.http.routers.ldap.tls=true"
+      - "traefik.http.routers.ldap.entrypoints=https"
+      - "traefik.http.routers.ldap.tls.certresolver=le"
     environment:
       PHPLDAPADMIN_LDAP_HOSTS: ldap.infrastruct.ru
       PHPLDAPADMIN_TRUST_PROXY_SSL: true
@@ -78,18 +81,17 @@ services:
         }
         gitlab_rails['gitlab_shell_ssh_port'] = 22
         gitlab_rails['smtp_enable'] = false
-
         gitlab_rails['ldap_enabled'] = true
         gitlab_rails['prevent_ldap_sign_in'] = false
         gitlab_rails['ldap_servers'] = {
           'main' => {
           'label' => 'LDAP',
-          'host' =>  'ldap.infrastruct.ru',
-          'port' => 636,
+          'host' =>  'ldap',
+          'port' => 389,
           'uid' => 'uid',
-          'bind_dn' => 'CN=admin,DC=infrastruct,DC=ru',
+          'bind_dn' => 'cn=admin,dc=infrastruct,dc=ru',
           'password' => '$LDAP_ADMIN_PASSWORD',
-          'encryption' => 'simple_tls',
+          'encryption' => 'plain',
           'verify_certificates' => false,
           'timeout' => 10,
           'active_directory' => false,
@@ -134,6 +136,7 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=proxynet"
       - "traefik.http.routers.rocketchat.rule=Host(`chat.infrastruct.ru`)"
       - "traefik.http.routers.rocketchat.tls=true"
       - "traefik.http.routers.rocketchat.entrypoints=https"
@@ -144,7 +147,15 @@ services:
       ROOT_URL: http://chat.infrastruct.ru:3000
       PORT: 3000
       DEPLOY_METHOD: docker
-      
+      #LDAP_Enable: 'true'
+      #LDAP_Host: 'ldap'
+      #LDAP_Port: '389'
+      #LDAP_Authentication_UserDN: 'cn=admin,dc=infrastruct,dc=ru'
+      #LDAP_Authentication_Password: '$LDAP_ADMIN_PASSWORD'
+      #LDAP_BaseDN: 'dc=infrastruct,dc=ru'
+      #LDAP_Username_Field: 'uid'
+      #LDAP_Authentication: 'true'
+      #OVERWRITE_SETTING_Accounts_TwoFactorAuthentication_Enabled: 'false'
     depends_on:
       - mongodb
     ports:
@@ -165,6 +176,9 @@ services:
       MONGODB_ADVERTISED_HOSTNAME: mongodb
       MONGODB_ENABLE_JOURNAL: true
       ALLOW_EMPTY_PASSWORD: yes
+
+volumes:
+  mongodb_data:
 
 networks:
   default:

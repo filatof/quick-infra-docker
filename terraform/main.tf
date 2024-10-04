@@ -112,18 +112,18 @@ resource "yandex_compute_instance" "node" {
 
 
 resource "yandex_dns_zone" "example_zone" {
-  name        = "nanocorpinfra"
+  name        = "infrastruct"
   description = "my zone dns"
   labels = {
     label1 = "lable_zone_dns"
   }
-  zone    = "nanocorpinfra.ru."
+  zone    = "infrastruct.ru."
   public  = true
 }
 
 resource "yandex_dns_recordset" "node1" {
   zone_id = yandex_dns_zone.example_zone.id
-  name    = "node1.nanocorpinfra.ru."
+  name    = "node1.infrastruct.ru."
   type    = "A"
   ttl     = 300
   
@@ -132,7 +132,7 @@ resource "yandex_dns_recordset" "node1" {
 
 resource "yandex_dns_recordset" "node" {
   zone_id = yandex_dns_zone.example_zone.id
-  name    = "*.nanocorpinfra.ru."
+  name    = "*.infrastruct.ru."
   type    = "A"
   ttl     = 300
   
