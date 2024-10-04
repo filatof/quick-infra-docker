@@ -7,6 +7,16 @@
 │   └── main.tf         # Terraform файл для развертывания инфраструктуры
 ├── docker-compose.yml   # Docker Compose файл для настройки сервисов
 └── .env                # Файл для переменных окружения
+.
+├─ index.md
+├─ foo
+│  ├─ index.md
+│  ├─ one.md
+│  └─ two.md
+└─ bar
+   ├─ index.md
+   ├─ three.md
+   └─ four.md
 ## Сервисы
 
 1. **LDAP**
