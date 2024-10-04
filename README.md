@@ -3,20 +3,12 @@
 Этот проект предназначен для развертывания инфраструктуры на Yandex Cloud с использованием Terraform и Docker Compose. Он включает в себя следующие сервисы: LDAP, GitLab и Rocket.Chat, которые работают через обратный прокси Traefik с автоматическим получением сертификатов от Let's Encrypt.
 
 ## Структура проекта
+```bash
 ├── terraform
 │   └── main.tf         # Terraform файл для развертывания инфраструктуры
 ├── docker-compose.yml   # Docker Compose файл для настройки сервисов
 └── .env                # Файл для переменных окружения
-.
-├─ index.md
-├─ foo
-│  ├─ index.md
-│  ├─ one.md
-│  └─ two.md
-└─ bar
-   ├─ index.md
-   ├─ three.md
-   └─ four.md
+```
 ## Сервисы
 
 1. **LDAP**
