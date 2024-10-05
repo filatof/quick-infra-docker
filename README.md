@@ -2,7 +2,7 @@
 
 Этот проект содержит код для развертывания инфраструктуры в Yandex Cloud с использованием Terraform и Docker Compose. Он включает в себя следующие сервисы: LDAP, GitLab и Rocket.Chat, которые работают через обратный прокси Traefik с автоматическим получением сертификатов от Let's Encrypt.
 
-![Иллюстрация к проекту](https://github.com/filatof/nanocorpinfra/blob/main/images/infra.png)
+![Иллюстрация к проекту](infra.png)
 
 ## Структура проекта
 ```bash
